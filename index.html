@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家居选购DISC性格测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.08);
+            padding: 30px;
+        }
+        .title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .desc {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .progress {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            text-align: right;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .question {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #34495e;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .option {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+        .option:hover {
+            background: #e9ecef;
+        }
+        .option.active {
+            border-color: #3498db;
+            background: #e3f2fd;
+            color: #2c3e50;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+        }
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .btn:hover:not(:disabled) {
+            background: #2980b9;
+        }
+        .result-page {
+            display: none;
+        }
+        .score-card {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .score-item {
+            flex: 1;
+            min-width: 80px;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 500;
+        }
+        .score-d {
+            background: #e74c3c;
+        }
+        .score-i {
+            background: #f39c12;
+        }
+        .score-s {
+            background: #2ecc71;
+        }
+        .score-c {
+            background: #9b59b6;
+        }
+        .type-result {
+            padding: 20px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid #3498db;
+        }
+        .type-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2980b9;
+        }
+        .type-desc {
+            font-size: 16px;
+            color: #34495e;
+            line-height: 1.8;
+        }
+        .double-type {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+        .interpretation {
+            margin-top: 30px;
+        }
+        .inter-title {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        .inter-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .inter-subtitle {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            .title {
+                font-size: 22px;
+            }
+            .question {
+                font-size: 17px;
+            }
+            .option {
+                font-size: 15px;
+                padding: 12px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 答题页面 -->
+        <div class="quiz-page">
+            <h1 class="title">家居选购场景DISC性格测试</h1>
+            <div class="desc">
+                本测试专为家居选购场景设计，适配客户选品决策、导购服务推荐<br>
+                请根据<strong>真实行为表现</strong>选择，无正确错误之分，每题仅选1项
+            </div>
+            <div class="progress">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="progress-text">第<span id="current-question">1</span>题/共24题</div>
+            <div class="question" id="question-content"></div>
+            <div class="options" id="options-list"></div>
+            <button class="btn" id="next-btn" disabled>下一题</button>
+        </div>
+
+        <!-- 结果页面 -->
+        <div class="result-page">
+            <h1 class="title">你的家居选购DISC性格报告</h1>
+            <div class="score-card">
+                <div class="score-item score-d">D型<br><span id="score-d">0</span>分</div>
+                <div class="score-item score-i">I型<br><span id="score-i">0</span>分</div>
+                <div class="score-item score-s">S型<br><span id="score-s">0</span>分</div>
+                <div class="score-item score-c">C型<br><span id="score-c">0</span>分</div>
+            </div>
+            <div class="type-result" id="type-result"></div>
+            <div class="interpretation">
+                <h3 class="inter-title">家居选购场景专属适配建议</h3>
+                <div id="interpretation-content"></div>
+            </div>
+            <button class="btn" id="restart-btn">重新测试</button>
+        </div>
+    </div>
+
+    <script>
+        // 测试题库（家居选购场景24题，对应D/A、I/B、S/C、C/D）
+        const questions = [
+            {
+                title: "参与家居选购时，更倾向：",
+                options: [
+                    { text: "快速锁定心仪款，确定就不纠结", type: "D" },
+                    { text: "先和导购/家人聊款式、氛围，再选品", type: "I" },
+                    { text: "按预算和刚需稳选，不轻易改方向", type: "S" },
+                    { text: "先研究材质、参数、工艺，再挑款", type: "C" }
+                ]
+            },
+            {
+                title: "和对方沟通家居选品时，更习惯：",
+                options: [
+                    { text: "直接说“想要什么风格/价位/功能”，不绕弯", type: "D" },
+                    { text: "先聊家居搭配喜好、生活场景，再谈具体产品", type: "I" },
+                    { text: "耐心听导购推荐/家人建议，再表达想法", type: "S" },
+                    { text: "摆自己的选品标准，用细节（如尺寸/环保等级）沟通", type: "C" }
+                ]
+            },
+            {
+                title: "面对心仪家居款有小幅瑕疵/超预算时，会：",
+                options: [
+                    { text: "只要核心需求满足，要么砍价要么果断入手", type: "D" },
+                    { text: "觉得款式/氛围合心意，小问题可接受，爽快决定", type: "I" },
+                    { text: "有点纠结，想再看看同款替代款，求稳选择", type: "S" },
+                    { text: "瑕疵/超预算都不能接受，要么换款要么要求完美解决方案", type: "C" }
+                ]
+            },
+            {
+                title: "家居选购中，和家人/导购配合时更像：",
+                options: [
+                    { text: "主导选品方向，定风格/预算/核心要求", type: "D" },
+                    { text: "活跃沟通氛围，协调家人/导购的意见", type: "I" },
+                    { text: "配合他人的选品想法，补全细节需求", type: "S" },
+                    { text: "把控选品细节，核对材质、尺寸、售后等关键信息", type: "C" }
+                ]
+            },
+            {
+                title: "选家居时做最终决策，会：",
+                options: [
+                    { text: "自己拿主意，快速拍板，看中就下单", type: "D" },
+                    { text: "参考家人/导购的建议，聊得投缘就决定", type: "I" },
+                    { text: "多听身边人的意见，对比2-3家后谨慎选择", type: "S" },
+                    { text: "收集多家产品数据（材质/价格/售后），分析后再定", type: "C" }
+                ]
+            },
+            {
+                title: "导购推荐的款式/家人看中的风格和你预期不符时，会：",
+                options: [
+                    { text: "直接说出自己的要求，坚持心仪的类型", type: "D" },
+                    { text: "笑着解释自己的喜好，同时听听对方的推荐理由", type: "I" },
+                    { text: "不直接反驳，默默对比后再慢慢沟通", type: "S" },
+                    { text: "拿出自己的选品标准，理性分析该款式的不合适之处", type: "C" }
+                ]
+            },
+            {
+                title: "选购家居时，最注重的点是：",
+                options: [
+                    { text: "是否符合自己的核心需求，性价比和结果", type: "D" },
+                    { text: "款式颜值、家居氛围，以及沟通的愉悦感", type: "I" },
+                    { text: "产品实用、售后有保障，选品过程顺畅不折腾", type: "S" },
+                    { text: "材质环保、工艺精细、尺寸精准，符合既定标准", type: "C" }
+                ]
+            },
+            {
+                title: "逛家居卖场/线上直播间选品时，会：",
+                options: [
+                    { text: "直奔目标区域，不逛无关款式，节省时间", type: "D" },
+                    { text: "和导购/主播热情互动，聊聊搭配技巧，顺带看款", type: "I" },
+                    { text: "跟着家人/导购的节奏走，不主动逛陌生区域", type: "S" },
+                    { text: "安静浏览产品详情，观察细节，不随意搭话", type: "C" }
+                ]
+            },
+            {
+                title: "看中的家居款突然断货/需要定制（等待周期长），会：",
+                options: [
+                    { text: "立刻换同款替代款，不接受长时间等待", type: "D" },
+                    { text: "快速接受定制，和导购聊定制细节，充满期待", type: "I" },
+                    { text: "有点抵触变化，纠结后要么等要么勉强换款", type: "S" },
+                    { text: "先分析定制的工期、质量保障，再决定是否等待", type: "C" }
+                ]
+            },
+            {
+                title: "给家人/客户推荐家居款式时，会：",
+                options: [
+                    { text: "直接指出款式的核心优势，适配的需求", type: "D" },
+                    { text: "委婉推荐，结合家居氛围夸款式，鼓励对方尝试", type: "I" },
+                    { text: "顾虑对方的感受，先问喜好再谨慎推荐，不勉强", type: "S" },
+                    { text: "客观分析款式的材质、尺寸、搭配性，给出数据支撑", type: "C" }
+                ]
+            },
+            {
+                title: "确定家居款式后，完成下单/推荐跟进时，会：",
+                options: [
+                    { text: "快速核对核心信息，立刻下单/跟进，不拖沓", type: "D" },
+                    { text: "边沟通边核对信息，顺带聊后续的搭配建议", type: "I" },
+                    { text: "按流程一步步核对，不慌不忙，确保不出错", type: "S" },
+                    { text: "反复核对材质、尺寸、售后、配送等所有细节，无问题再推进", type: "C" }
+                ]
+            },
+            {
+                title: "制定家居选购计划/给客户做选品方案时，会：",
+                options: [
+                    { text: "定核心目标（如一周内选完客厅家具），直奔结果", type: "D" },
+                    { text: "定有吸引力的方案（如网红风格搭配），带动对方的选品兴趣", type: "I" },
+                    { text: "定贴合实际的计划（如按预算选刚需款），稳步推进", type: "S" },
+                    { text: "定详细的选品方案，标注材质、尺寸、价格等所有细节", type: "C" }
+                ]
+            },
+            {
+                title: "选家居时和家人/客户产生风格/款式分歧，会：",
+                options: [
+                    { text: "直接说出自己的理由，争取达成共识，不浪费时间", type: "D" },
+                    { text: "主动调和气氛，找折中款式，化解分歧", type: "I" },
+                    { text: "回避正面争论，默默对比后再慢慢沟通，保持和谐", type: "S" },
+                    { text: "理性分析各款式的优劣，结合实际需求找最优解", type: "C" }
+                ]
+            },
+            {
+                title: "选到心仪的家居款/帮客户选到满意的产品后，会：",
+                options: [
+                    { text: "立刻定下下一个选购目标，继续推进", type: "D" },
+                    { text: "和家人/客户分享喜悦，夸赞款式的适配性", type: "I" },
+                    { text: "平常心对待，觉得选到合适的就好，继续按计划走", type: "S" },
+                    { text: "总结这次选品的经验，记录细节，方便后续选购/推荐", type: "C" }
+                ]
+            },
+            {
+                title: "家居选购的节奏偏好是：",
+                options: [
+                    { text: "快节奏，速战速决，不喜欢反复逛", type: "D" },
+                    { text: "灵活节奏，边逛边聊，遇到合心意的就停下看", type: "I" },
+                    { text: "慢节奏，一家家慢慢看，不着急做决定", type: "S" },
+                    { text: "规律节奏，按提前列的清单逛，不随意看无关产品", type: "C" }
+                ]
+            },
+            {
+                title: "想让家人/客户接受自己看中的家居款式时，会：",
+                options: [
+                    { text: "用“符合需求、性价比高、实用性强”说服对方", type: "D" },
+                    { text: "用热情的语气聊款式的颜值、搭配氛围，感染对方", type: "I" },
+                    { text: "用“实用、售后有保障、大家都觉得合适”真诚说服", type: "S" },
+                    { text: "用材质报告、尺寸数据、用户评价等逻辑支撑说服对方", type: "C" }
+                ]
+            },
+            {
+                title: "遇到导购推荐拖沓/家人选品犹豫不决时，会：",
+                options: [
+                    { text: "直接催促，要求对方快速给出意见/推荐重点", type: "D" },
+                    { text: "鼓励引导对方，聊款式的亮点，调动选品积极性", type: "I" },
+                    { text: "温和提醒，耐心等待对方做决定，不催促", type: "S" },
+                    { text: "指出拖沓/犹豫的问题，给出具体的选品参考标准", type: "C" }
+                ]
+            },
+            {
+                title: "接触一款新的家居风格/新品类时，会：",
+                options: [
+                    { text: "快速掌握核心特点，适合自己就直接尝试", type: "D" },
+                    { text: "因兴趣驱动，边看边和导购/家人聊搭配，边了解边选", type: "I" },
+                    { text: "按步骤了解款式、材质，反复对比后再决定是否尝试", type: "S" },
+                    { text: "先吃透该风格的搭配逻辑/品类的工艺参数，再动手选", type: "C" }
+                ]
+            },
+            {
+                title: "选购中发现心仪款有售后争议/材质和宣传不符，会：",
+                options: [
+                    { text: "立刻找导购/客服解决，要求明确的处理方案", type: "D" },
+                    { text: "先安抚自己/家人的情绪，再和对方沟通解决办法", type: "I" },
+                    { text: "稳定情绪，先看看其他款式，再慢慢沟通处理", type: "S" },
+                    { text: "全面分析问题原因，收集证据，要求对方给出合理的解决方案", type: "C" }
+                ]
+            },
+            {
+                title: "向导购/家人表达自己的家居选品想法时，会：",
+                options: [
+                    { text: "直言不讳，直接说清楚喜好和拒绝的款式", type: "D" },
+                    { text: "生动描述自己想要的家居氛围，善于举例参考款式", type: "I" },
+                    { text: "语气温和，谨慎表达想法，不轻易否定对方的建议", type: "S" },
+                    { text: "条理清晰，按“风格-材质-尺寸-预算”的逻辑表达需求", type: "C" }
+                ]
+            },
+            {
+                title: "对待家居品牌的选购规则/导购的推荐流程，会：",
+                options: [
+                    { text: "灵活变通，只要能选到心仪款，可不按固定流程", type: "D" },
+                    { text: "不太在意规则，随性逛，聊得投缘就听导购推荐", type: "I" },
+                    { text: "严格遵守选品流程，按规则看款、下单，不越边界", type: "S" },
+                    { text: "深究规则细节，确认所有流程都合规，保障自身权益", type: "C" }
+                ]
+            },
+            {
+                title: "家居选购时遇到预算有限、款式难选的压力，会：",
+                options: [
+                    { text: "化压力为动力，快速缩小选品范围，精准锁定目标", type: "D" },
+                    { text: "通过和家人/导购聊天、逛网红款式释放压力，再继续选", type: "I" },
+                    { text: "默默承受压力，慢慢看款，不急于做决定", type: "S" },
+                    { text: "梳理选品需求，合理分配预算，按优先级选品", type: "C" }
+                ]
+            },
+            {
+                title: "选购中因自己的疏忽（如看错尺寸/漏看材质）选了不合适的款，会：",
+                options: [
+                    { text: "先想办法退换货解决问题，再总结问题原因", type: "D" },
+                    { text: "主动和导购沟通道歉，积极配合退换货，调和沟通氛围", type: "I" },
+                    { text: "内心自责，尽力弥补，按对方的流程慢慢处理", type: "S" },
+                    { text: "详细分析疏忽的原因，记录下来，避免后续再犯", type: "C" }
+                ]
+            },
+            {
+                title: "对全屋家居的选购规划/给客户做全屋选品规划时，会：",
+                options: [
+                    { text: "定大的风格和预算方向，不拘泥于小细节", type: "D" },
+                    { text: "充满憧憬，规划多样的搭配风格，灵活调整", type: "I" },
+                    { text: "稳步规划，按房间刚需一步步选，注重整体稳定", type: "S" },
+                    { text: "做详细的全屋规划，标注每个房间的产品尺寸、材质、预算，步步落实", type: "C" }
+                ]
+            }
+        ];
+
+        // 性格解读库（家居选购场景专属）
+        const interpretations = {
+            D: {
+                name: "D型（支配型）：果决选品者/强势推荐者",
+                desc: "核心行为：选品/推荐目标明确，决策快，不喜欢拖沓和绕弯子，注重核心需求和结果，会主动主导选购过程；导购侧则是推荐直接，抓核心需求，不做无效推荐。",
+                suggest: "适配沟通：直给核心信息（材质/价格/核心优势），不啰嗦，尊重其主导权，不强行改变其决策；选品时聚焦核心需求，减少无关选项干扰。"
+            },
+            I: {
+                name: "I型（影响型）：氛围选品者/热情推荐者",
+                desc: "核心行为：选品重颜值、家居氛围，喜欢和导购/家人互动交流，容易被情绪和氛围感染，决策易受沟通体验影响；导购侧则是热情健谈，擅长聊搭配，能带动客户的选品兴趣。",
+                suggest: "适配沟通：多聊款式搭配、家居场景氛围，保持沟通愉悦，用热情感染对方，少讲枯燥的细节数据；选品时注重视觉体验和沟通感受，提升选品愉悦度。"
+            },
+            S: {
+                name: "S型（稳健型）：实用选品者/温和推荐者",
+                desc: "核心行为：选品重实用、性价比和售后保障，追求选品过程顺畅不折腾，决策慢，易受他人意见影响，回避选品分歧；导购侧则是耐心温和，注重倾听需求，不催促，稳扎稳打做推荐。",
+                suggest: "适配沟通：多强调产品实用性、售后保障，耐心解答问题，不强行推荐，给足对比和思考的时间；选品时优先考虑刚需和售后，减少决策焦虑。"
+            },
+            C: {
+                name: "C型（谨慎型）：细节选品者/专业推荐者",
+                desc: "核心行为：选品重材质、工艺、尺寸等细节，追求完美，会反复核对数据和信息，决策前必做对比分析，不接受模糊答案；导购侧则是专业严谨，注重用数据/报告支撑推荐，细节讲解到位。",
+                suggest: "适配沟通：主动提供材质报告、尺寸数据、售后细则等硬核信息，回答问题精准不模糊，不夸大产品优势；选品时做好细节核对，提前收集产品参数，避免后续问题。"
+            },
+            DI: {
+                name: "双主导型（D+I）：果决氛围型",
+                desc: "核心行为：选品有明确主见，同时极度看重家居颜值和氛围，决策果断且易被愉悦的沟通体验感染；导购侧则是推荐果断不拖沓，又擅长调动客户选品兴趣，精准匹配风格需求。",
+                suggest: "适配沟通：先明确核心需求和风格偏好，直给符合要求的高颜值款式，少讲无关细节，用风格亮点打动对方；适配场景：网红款、风格化家居、全屋整装风格搭配。"
+            },
+            DC: {
+                name: "双主导型（D+C）：果决细节型",
+                desc: "核心行为：选品决策果断，同时注重产品细节和硬实力，不接受“凑活选”，既追求效率又要求完美，核心需求明确且细节标准高；导购侧则是推荐精准专业，快速锁定目标且细节讲解到位。",
+                suggest: "适配沟通：直给核心参数+细节亮点，快速筛选符合标准的产品，不做无效推荐，用数据支撑核心优势；适配场景：高端定制、全屋整装、高品质刚需家居选购。"
+            },
+            IS: {
+                name: "双主导型（I+S）：氛围实用型",
+                desc: "核心行为：选品重氛围和颜值，同时兼顾实用性和售后保障，喜欢互动交流但不追求激进风格，决策偏温和，注重选品过程的愉悦和稳妥；导购侧则是温和热情，擅长刚需款的风格化搭配推荐。",
+                suggest: "适配沟通：聊风格搭配的同时强调实用性，用温和的语气推荐，不催促，给少量优质选项对比；适配场景：刚需家居选购、婚房装修、简约风格搭配。"
+            },
+            SC: {
+                name: "双主导型（S+C）：稳健细节型",
+                desc: "核心行为：选品追求稳当实用，同时极度注重产品细节和品质，决策慢且反复核对信息，优先保障使用安全和售后，不接受任何细节瑕疵；导购侧则是耐心且专业，注重细节讲解和售后保障说明。",
+                suggest: "适配沟通：详细讲解材质、工艺和售后细则，强调产品安全性和耐用性，给足对比时间，不强行推进决策；适配场景：儿童房、老人房、环保家居、高品质刚需款选购。"
+            }
+        };
+
+        // 全局变量
+        let currentQ = 0;
+        let scores = { D: 0, I: 0, S: 0, C: 0 };
+        let selectedOption = null;
+
+        // DOM元素
+        const quizPage = document.querySelector('.quiz-page');
+        const resultPage = document.querySelector('.result-page');
+        const questionContent = document.getElementById('question-content');
+        const optionsList = document.getElementById('options-list');
+        const nextBtn = document.getElementById('next-btn');
+        const currentQuestionText = document.getElementById('current-question');
+        const progressBar = document.querySelector('.progress-bar');
+        const scoreD = document.getElementById('score-d');
+        const scoreI = document.getElementById('score-i');
+        const scoreS = document.getElementById('score-s');
+        const scoreC = document.getElementById('score-c');
+        const typeResult = document.getElementById('type-result');
+        const interpretationContent = document.getElementById('interpretation-content');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // 初始化题目
+        function initQuestion() {
+            const q = questions[currentQ];
+            questionContent.innerText = q.title;
+            optionsList.innerHTML = '';
+            selectedOption = null;
+            nextBtn.disabled = true;
+
+            q.options.forEach((opt, index) => {
+                const option = document.createElement('div');
+                option.className = 'option';
+                option.dataset.type = opt.type;
+                option.dataset.index = index;
+                option.innerText = opt.text;
+                option.addEventListener('click', selectOption);
+                optionsList.appendChild(option);
+            });
+
+            // 更新进度
+            currentQuestionText.innerText = currentQ + 1;
+            const progress = ((currentQ + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // 选择选项
+        function selectOption(e) {
+            const target = e.target;
+            // 移除之前的选中状态
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('active'));
+            // 添加当前选中状态
+            target.classList.add('active');
+            selectedOption = target.dataset.type;
+            nextBtn.disabled = false;
+        }
+
+        // 下一题/提交
+        function nextQuestion() {
+            // 记录分数
+            scores[selectedOption]++;
+
+            // 判断是否是最后一题
+            if (currentQ < questions.length - 1) {
+                currentQ++;
+                initQuestion();
+            } else {
+                // 完成答题，显示结果
+                showResult();
+            }
+        }
+
+        // 显示结果
+        function showResult() {
+            // 更新分数显示
+            scoreD.innerText = scores.D;
+            scoreI.innerText = scores.I;
+            scoreS.innerText = scores.S;
+            scoreC.innerText = scores.C;
+
+            // 找到最高分
+            const scoreArr = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+            const maxScore = scoreArr[0][1];
+            const topTypes = scoreArr.filter(item => item[1] === maxScore).map(item => item[0]);
+
+            // 生成结果解读
+            let typeKey = '';
+            let typeHtml = '';
+            let interHtml = '';
+
+            if (topTypes.length === 1) {
+                typeKey = topTypes[0];
+                const info = interpretations[typeKey];
+                typeHtml = `
+                    <h3 class="type-title">${info.name}</h3>
+                    <p class="type-desc">${info.desc}</p>
+                `;
+                interHtml = `
+                    <div class="inter-item">
+                        <h4 class="inter-subtitle">适配沟通/选品建议</h4>
+                        <p>${info.suggest}</p>
+                    </div>
+                `;
+            } else {
+                // 双主导类型（取前两位组合，按固定顺序）
+                typeKey = topTypes.sort().join('');
+                // 兼容常见双类型组合
+                const combineKey = ['D','I','S','C'].filter(t => topTypes.includes(t)).join('');
+                const info = interpretations[combineKey] || interpretations[topTypes[0]];
+                typeHtml = `
+                    <h3 class="type-title">${info.name}</h3>
+                    <p class="type-desc"><span class="double-type">【双主导类型说明】</span>你同时具备${topTypes[0]}型和${topTypes[1]}型的核心特质，是复合型行为风格，在选购中会兼顾两种类型的需求。${info.desc}</p>
+                `;
+                interHtml = `
+                    <div class="inter-item">
+                        <h4 class="inter-subtitle">适配沟通/选品建议</h4>
+                        <p>${info.suggest}</p>
+                    </div>
+                `;
+            }
+
+            // 插入结果
+            typeResult.innerHTML = typeHtml;
+            interpretationContent.innerHTML = interHtml;
+
+            // 切换页面
+            quizPage.style.display = 'none';
+            resultPage.style.display = 'block';
+        }
+
+        // 重新测试
+        function restartTest() {
+            currentQ = 0;
+            scores = { D: 0, I: 0, S: 0, C: 0 };
+            selectedOption = null;
+            resultPage.style.display = 'none';
+            quizPage.style.display = 'block';
+            initQuestion();
+        }
+
+        // 事件监听
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', restartTest);
+
+        // 初始化
+        window.onload = initQuestion;
+    </script>
+</body>
+</html>
